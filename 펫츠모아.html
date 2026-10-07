@@ -1,0 +1,533 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>펫츠모아</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: 한 손 조작용 단일 컬럼 앱. 상단 헤더 / 스크롤 본문 / 하단 탭바. 시트는 앱 위로 올라오는 전체 화면 레이어. */
+:root{
+  --bg:#EEF3F2; --surface:#FFFFFF; --ink:#13232A; --muted:#58696F; --line:#DAE4E2;
+  --accent:#0C7F70; --accent-ink:#FFFFFF; --sun:#FFC24B; --sun-ink:#3A2800;
+  --warn:#B93A0B; --warn-bg:#FDEBE3; --ok:#18794E;
+  --c-food:#0C7F70; --c-snack:#B8700C; --c-pad:#3568B0; --c-toy:#B0447A; --c-care:#6554BD;
+  --f-display:'Jua','Noto Sans KR',sans-serif; --f-body:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1416; --surface:#162226; --ink:#E7EFEF; --muted:#94A7AA; --line:#25363A;
+  --accent:#43C8B2; --accent-ink:#04211C; --sun:#E5A82E; --sun-ink:#2A1D00;
+  --warn:#FF9A73; --warn-bg:#3A2218; --ok:#59D49A;
+  --c-food:#4FD1BB; --c-snack:#F0B04A; --c-pad:#7FAAE8; --c-toy:#E58AB3; --c-care:#A99BF0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1416; --surface:#162226; --ink:#E7EFEF; --muted:#94A7AA; --line:#25363A;
+  --accent:#43C8B2; --accent-ink:#04211C; --sun:#E5A82E; --sun-ink:#2A1D00;
+  --warn:#FF9A73; --warn-bg:#3A2218; --ok:#59D49A;
+  --c-food:#4FD1BB; --c-snack:#F0B04A; --c-pad:#7FAAE8; --c-toy:#E58AB3; --c-care:#A99BF0; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+input,select{font:inherit;color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#app{position:relative;max-width:480px;height:100%;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;border-inline:1px solid var(--line)}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.logo{font-family:var(--f-display);font-size:22px;color:var(--accent);letter-spacing:-.01em}
+.icon-btn{position:relative;width:40px;height:40px;display:grid;place-items:center;border-radius:50%}
+.icon-btn:hover{background:var(--bg)}
+.badge-n{position:absolute;top:2px;right:0;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:700;display:grid;place-items:center}
+main{flex:1;min-height:0;overflow-y:auto;padding:16px 16px 24px;display:flex;flex-direction:column;gap:20px}
+nav.tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border-top:1px solid var(--line)}
+nav.tabs button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 9px;font-size:11px;color:var(--muted)}
+nav.tabs button[aria-current="page"]{color:var(--accent);font-weight:700}
+svg.i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+h2{margin:0;font-size:16px;font-weight:700}
+.sec{display:flex;flex-direction:column;gap:10px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sec-h small{color:var(--muted);font-size:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.pet{display:flex;gap:12px;align-items:center}
+.avatar{width:52px;height:52px;border-radius:50%;background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--accent);display:grid;place-items:center;font-family:var(--f-display);font-size:22px;flex:none}
+.pet b{font-size:16px}
+.muted{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;min-height:26px;padding:2px 10px;border-radius:13px;font-size:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.chip.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.chip.acc{background:color-mix(in srgb,var(--accent) 14%,var(--surface));color:var(--accent);border-color:transparent;font-weight:500}
+.chip.sun{background:var(--sun);color:var(--sun-ink);border-color:transparent;font-weight:700}
+.toggle{min-height:36px;padding:4px 14px;font-size:13px}
+.toggle[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.alert{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.alert .t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.alert.hot{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 16%,var(--surface))}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:14px;text-align:center}
+.btn.sm{min-height:34px;padding:0 12px;font-size:13px;border-radius:10px;flex:none}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);font-weight:500}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+.hscroll{display:flex;gap:10px;overflow-x:auto;margin-inline:-16px;padding-inline:16px;padding-bottom:4px;scroll-snap-type:x proximity}
+.hscroll .pcard{flex:none;width:150px;scroll-snap-align:start}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pcard{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px 8px 12px;min-width:0}
+.tile{position:relative;aspect-ratio:1/1;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--cc) 16%,var(--surface));color:var(--cc)}
+.tile svg{width:46%;height:46%;stroke-width:1.5}
+.tile .tl{position:absolute;left:6px;top:6px;display:flex;gap:4px;flex-wrap:wrap}
+.tile .tl .chip{min-height:20px;padding:0 7px;font-size:11px}
+[data-cat="사료"]{--cc:var(--c-food)} [data-cat="간식"]{--cc:var(--c-snack)} [data-cat="배변"]{--cc:var(--c-pad)} [data-cat="장난감"]{--cc:var(--c-toy)} [data-cat="케어"]{--cc:var(--c-care)}
+.pcard .nm{font-size:13px;font-weight:500;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pcard .br{font-size:11px;color:var(--muted)}
+.price{font-weight:700;font-variant-numeric:tabular-nums}
+.rate{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 14px}
+.cats{display:flex;gap:6px;overflow-x:auto;margin-inline:-16px;padding-inline:16px}
+.cats .chip{flex:none}
+.safe{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+.sw{position:relative;width:44px;height:26px;border-radius:13px;background:var(--line);flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface);transition:transform .15s}
+.sw[aria-checked="true"]{background:var(--accent)}
+.sw[aria-checked="true"]::after{transform:translateX(18px)}
+.sheet{position:absolute;inset:0;z-index:5;background:var(--bg);display:flex;flex-direction:column;transform:translateY(100%);visibility:hidden;transition:transform .22s ease,visibility 0s .22s}
+.sheet.open{transform:none;visibility:visible;transition:transform .22s ease}
+.sheet header{display:flex;align-items:center;gap:6px;padding:8px 8px;background:var(--surface);border-bottom:1px solid var(--line)}
+.sheet header h2{flex:1;text-align:center;padding-right:40px}
+.sheet .body{flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:18px}
+.sheet footer{padding:10px 16px;background:var(--surface);border-top:1px solid var(--line);display:flex;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px}
+.opt[aria-pressed="true"] .dot{border:5px solid var(--accent)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.qty button{width:34px;height:34px;font-size:18px}
+.qty span{min-width:30px;text-align:center;font-variant-numeric:tabular-nums}
+.line{display:flex;gap:10px;align-items:center}
+.line .tile{width:60px;flex:none}
+.line .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.review{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.review.match{border-color:var(--accent)}
+.stars{color:var(--c-snack);letter-spacing:1px;font-size:13px}
+.sum{display:flex;flex-direction:column;gap:6px}
+.sum .row.tot{padding-top:8px;border-top:1px solid var(--line);font-size:16px;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.lbl{font-size:12px;color:var(--muted);font-weight:500}
+.field input,.field select{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 12px;width:100%}
+.err{color:var(--warn);font-size:13px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.bars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:96px}
+.bars div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;font-size:11px;color:var(--muted)}
+.bars i{display:block;width:100%;max-width:26px;border-radius:6px 6px 2px 2px;background:color-mix(in srgb,var(--accent) 35%,var(--surface))}
+.bars div.today i{background:var(--accent)}
+.bars b{font-weight:500;font-variant-numeric:tabular-nums;color:var(--ink);font-size:11px}
+.meter{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent)}
+.meter.low i{background:var(--warn)}
+.toast{position:absolute;left:50%;bottom:84px;z-index:9;transform:translate(-50%,12px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;max-width:88%;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.empty{text-align:center;padding:28px 16px;color:var(--muted);display:flex;flex-direction:column;gap:10px;align-items:center}
+.note{font-size:12px;color:var(--muted)}
+.tag-ex{font-size:11px;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:0 6px}
+@media (prefers-reduced-motion:reduce){.sheet,.toast,.sw::after{transition:none}}
+</style>
+
+<div id="app">
+  <header class="top">
+    <span class="logo">펫츠모아</span>
+    <button class="icon-btn" data-act="cart" aria-label="장바구니">
+      <svg class="i" viewBox="0 0 24 24"><path d="M3 4h2.2l2 11h10.4l2-8H6.2"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg>
+      <span class="badge-n" id="cartN" hidden>0</span>
+    </button>
+  </header>
+  <main id="main"></main>
+  <nav class="tabs" id="tabs"></nav>
+  <section class="sheet" id="sheet" aria-modal="true" role="dialog"></section>
+  <div class="toast" id="toast" role="status"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ---------- 데이터 ---------- */
+var SKIN='피부',JOINT='관절',GUT='소화',EYE='눈물자국',TEETH='치아';
+var ALLERGENS=['닭고기','소고기','오리고기','연어','참치','쌀','옥수수','유제품'];
+var CONDS=[SKIN,JOINT,GUT,EYE,TEETH];
+var CATS=['전체','사료','간식','배변','장난감','케어'];
+var AGE_LABEL={young:'어린 아이',adult:'성체',senior:'노령'};
+var ALL=['young','adult','senior'];
+function P(id,name,brand,sp,cat,price,ing,ages,tags,rating,n,sub,desc){return{id:id,name:name,brand:brand,sp:sp,cat:cat,price:price,ing:ing,ages:ages,tags:tags,rating:rating,n:n,sub:sub,desc:desc}}
+var PRODUCTS=[
+ P(1,'그레인프리 연어 사료 2kg','누리팜','dog','사료',32900,['연어','고구마','완두','오메가3'],['adult'],[SKIN,EYE],4.7,1284,true,'곡물 없이 연어와 고구마로 만든 성견용 사료. 오메가3가 피부와 모질 관리를 돕습니다.'),
+ P(2,'닭가슴살 어덜트 사료 2kg','누리팜','dog','사료',27900,['닭고기','쌀','옥수수','비타민E'],['adult'],[GUT],4.5,2210,true,'닭가슴살을 주원료로 한 기본 성견 사료. 알갱이가 작아 소형견도 먹기 좋습니다.'),
+ P(3,'퍼피 소프트 사료 1.5kg','모아베이','dog','사료',24900,['오리고기','귀리','유산균'],['young'],[GUT],4.6,903,true,'이가 약한 강아지를 위해 부드럽게 만든 사료. 유산균이 장 건강을 돕습니다.'),
+ P(4,'시니어 관절케어 사료 2kg','모아베이','dog','사료',36900,['칠면조','글루코사민','콘드로이틴','현미'],['senior'],[JOINT],4.6,677,true,'관절 영양소를 담은 노령견 사료. 열량은 낮추고 단백질은 유지했습니다.'),
+ P(5,'무향 대형 배변패드 100매','보송','dog','배변',19900,['흡수 폴리머','펄프'],ALL,[],4.8,3560,true,'6겹 구조로 새지 않고 무향이라 예민한 아이도 거부감이 적습니다.'),
+ P(6,'저알러지 북어 트릿 100g','누리팜','dog','간식',8900,['북어','고구마'],ALL,[SKIN],4.7,812,false,'북어 한 가지 단백질만 사용한 저알러지 간식. 훈련용으로 잘게 쪼개 쓰기 좋습니다.'),
+ P(7,'덴탈껌 M 20개입','모아베이','dog','간식',11900,['쌀','글리세린','닭고기'],['adult','senior'],[TEETH],4.4,1530,false,'씹는 동안 치석을 닦아주는 덴탈껌. 중형견 이하 크기에 맞습니다.'),
+ P(8,'노즈워크 스낵 매트','핀포인트','dog','장난감',15900,['순면','펠트'],ALL,[],4.5,410,false,'간식을 숨겨 코로 찾게 하는 매트. 혼자 있는 시간의 스트레스를 줄여줍니다.'),
+ P(9,'저자극 오트밀 샴푸 500ml','보송','dog','케어',14900,['오트밀','알로에'],ALL,[SKIN],4.6,975,true,'약산성 샴푸로 건조하고 민감한 피부에 적합합니다. 눈에 들어가도 자극이 적습니다.'),
+ P(10,'인도어 연어 캣 사료 1.6kg','모아베이','cat','사료',29900,['연어','완두','크랜베리'],['adult'],[GUT,SKIN],4.7,1120,true,'실내 생활 고양이를 위한 사료. 크랜베리가 요로 건강을 돕습니다.'),
+ P(11,'키튼 닭고기 습식 24캔','누리팜','cat','사료',33900,['닭고기','닭간','타우린'],['young'],[GUT],4.6,594,true,'수분 섭취를 늘려주는 키튼용 습식 사료. 타우린이 풍부합니다.'),
+ P(12,'시니어 신장케어 캣 사료 1.6kg','모아베이','cat','사료',34900,['흰살생선','쌀','크랜베리'],['senior'],[GUT],4.5,388,true,'인 함량을 낮춘 노령묘 사료. 수의 영양사가 설계했습니다.'),
+ P(13,'두부 모래 6L 3팩','보송','cat','배변',21900,['두부','녹차'],ALL,[],4.8,4120,true,'먼지가 적고 변기에 버릴 수 있는 두부 모래. 응고력이 좋습니다.'),
+ P(14,'참치 퓨레 간식 20개입','누리팜','cat','간식',12900,['참치','타우린'],ALL,[],4.8,3002,false,'짜 먹는 퓨레 타입 간식. 약 먹이거나 병원 갈 때 기분 전환용으로 좋습니다.'),
+ P(15,'깃털 낚싯대 장난감','핀포인트','cat','장난감',7900,['깃털','대나무'],ALL,[],4.4,722,false,'사냥 본능을 깨우는 낚싯대. 교체용 깃털 2개가 함께 들어 있습니다.'),
+ P(16,'헤어볼 케어 젤 120g','모아베이','cat','케어',13900,['맥아','유산균'],ALL,[GUT],4.5,640,true,'털 정리가 잦은 고양이를 위한 젤. 짜서 앞발에 묻혀주면 핥아 먹습니다.'),
+ P(17,'눈물자국 클리너 100ml','보송','both','케어',9900,['정제수','카모마일'],ALL,[EYE],4.3,1011,false,'알코올 무첨가 클리너. 거즈에 적셔 눈가를 닦아줍니다.')
+];
+var DOG_REV=[
+ {b:'말티즈',a:3,c:[SKIN],r:5,t:'먹고 나서 털 윤기가 좋아졌어요. 입맛 까다로운 아이인데 잘 먹습니다.'},
+ {b:'푸들',a:5,c:[GUT],r:4,t:'변 상태가 안정적이에요. 처음엔 기존 제품과 조금씩 섞어 급여했습니다.'},
+ {b:'말티즈',a:2,c:[EYE],r:4,t:'눈물 양이 조금 줄어든 느낌이에요. 한 달 더 써보려고요.'},
+ {b:'포메라니안',a:9,c:[JOINT],r:5,t:'나이 든 아이도 부담 없이 씹어요. 계단 오르내리는 모습이 편해 보입니다.'},
+ {b:'골든리트리버',a:1,c:[],r:4,t:'양이 넉넉하고 포장이 튼튼해서 보관하기 편해요.'},
+ {b:'시츄',a:4,c:[SKIN],r:3,t:'기호성은 보통이에요. 긁는 횟수는 비슷합니다.'},
+ {b:'비숑',a:3,c:[TEETH],r:5,t:'배송이 빠르고 상태도 좋았어요. 재구매했습니다.'},
+ {b:'치와와',a:7,c:[GUT],r:4,t:'소량씩 잘 먹고 묽은 변이 줄었습니다.'}];
+var CAT_REV=[
+ {b:'코리안숏헤어',a:3,c:[GUT],r:5,t:'토하는 횟수가 줄었어요. 처음 일주일은 천천히 바꿔주는 걸 추천합니다.'},
+ {b:'러시안블루',a:2,c:[SKIN],r:4,t:'털 빠짐이 조금 줄었고 기호성도 좋아요.'},
+ {b:'브리티시숏헤어',a:8,c:[GUT],r:4,t:'나이가 있어서 걱정했는데 잘 먹고 변도 괜찮습니다.'},
+ {b:'페르시안',a:4,c:[EYE],r:4,t:'눈가 관리에 도움이 됐어요. 꾸준히 닦아주는 게 중요합니다.'},
+ {b:'코리안숏헤어',a:1,c:[],r:5,t:'어린 고양이도 거부감 없이 먹었습니다. 포장 상태도 깨끗했어요.'},
+ {b:'먼치킨',a:5,c:[SKIN],r:3,t:'무난해요. 아이마다 기호가 갈릴 것 같습니다.'}];
+var WEEKS=[2,4,6];
+var DAY=864e5;
+
+/* ---------- 상태 ---------- */
+function ymd(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(x<10?'0':'')+x}
+function fromYmd(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function addDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);return x}
+function today(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
+function diffDays(a,b){return Math.round((fromYmd(a)-b)/DAY)}
+function md(s){var d=fromYmd(s);return (d.getMonth()+1)+'월 '+d.getDate()+'일'}
+function seed(){
+  var t=today(),logs=[],i;
+  var walks=[40,25,55,30,45,20];
+  for(i=0;i<6;i++)logs.push({d:ymd(addDays(t,-6+i)),k:'walk',v:walks[i],ex:1});
+  logs.push({d:ymd(t),k:'walk',v:20,ex:1});
+  return{
+    pet:{name:'보리',sp:'dog',breed:'말티즈',age:3,kg:4.2,allergies:['닭고기'],conds:[SKIN]},
+    cart:[],subs:[],orders:[],logs:logs,
+    vacc:[{n:'종합백신(DHPPL)',next:ymd(addDays(t,12)),mo:12},{n:'켄넬코프',next:ymd(addDays(t,95)),mo:6},{n:'심장사상충 예방',next:ymd(addDays(t,4)),mo:1}],
+    stock:{g:600,daily:100},
+    addr:{name:'',phone:'',addr:''}
+  };
+}
+var KEY='petsmore-v1',S=seed();
+try{var raw=localStorage.getItem(KEY);if(raw){var o=JSON.parse(raw);if(o&&o.pet&&o.stock)S=o}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var UI={tab:'home',cat:'전체',q:'',safe:true,sheet:null,pid:null,opt:'once',weeks:4,qty:1,err:''};
+
+/* ---------- 유틸 ---------- */
+function $(s,r){return (r||document).querySelector(s)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function won(n){return Math.round(n).toLocaleString('ko-KR')+'원'}
+function byId(id){for(var i=0;i<PRODUCTS.length;i++)if(PRODUCTS[i].id===id)return PRODUCTS[i]}
+var ICONS={
+ '사료':'<path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4"/>',
+ '간식':'<path d="M9 15l6-6"/><circle cx="6.5" cy="14.5" r="2"/><circle cx="9.5" cy="17.5" r="2"/><circle cx="14.5" cy="6.5" r="2"/><circle cx="17.5" cy="9.5" r="2"/>',
+ '배변':'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M4 15h16M10 4v16M15 4v16"/>',
+ '장난감':'<circle cx="12" cy="12" r="8"/><path d="M4.5 9.5c4 1 11 1 15 0M4.5 14.5c4-1 11-1 15 0"/>',
+ '케어':'<path d="M12 3c3.5 4.5 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 2.5-6.5 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>'
+};
+function svg(p){return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>'}
+function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('on')},2000)}
+
+/* ---------- 맞춤 추천 로직 ---------- */
+function ageBand(p){var a=p.age;if(a<1)return'young';if(p.sp==='dog')return a>=8?'senior':'adult';return a>=10?'senior':'adult'}
+function hits(pr){var out=[],i;for(i=0;i<S.pet.allergies.length;i++)if(pr.ing.indexOf(S.pet.allergies[i])>-1)out.push(S.pet.allergies[i]);return out}
+function fitsSpecies(pr){return pr.sp==='both'||pr.sp===S.pet.sp}
+function matchTags(pr){var t=[],b=ageBand(S.pet);
+  if(pr.ages.length<3&&pr.ages.indexOf(b)>-1)t.push(AGE_LABEL[b]+' 맞춤');
+  S.pet.conds.forEach(function(c){if(pr.tags.indexOf(c)>-1)t.push(c+' 케어')});return t}
+function score(pr){var s=pr.rating,b=ageBand(S.pet);
+  if(pr.ages.length<3){s+=pr.ages.indexOf(b)>-1?3:-3}
+  S.pet.conds.forEach(function(c){if(pr.tags.indexOf(c)>-1)s+=2});return s}
+function pool(){return PRODUCTS.filter(fitsSpecies)}
+function safePool(){return pool().filter(function(p){return !hits(p).length})}
+function recs(){return safePool().sort(function(a,b){return score(b)-score(a)})}
+function unitPrice(pr,sub){return sub?Math.round(pr.price*0.9/10)*10:pr.price}
+function reviewsFor(pr){
+  var src=pr.sp==='cat'?CAT_REV:pr.sp==='dog'?DOG_REV:DOG_REV.slice(0,3).concat(CAT_REV.slice(0,3)),out=[],i;
+  for(i=0;i<5;i++)out.push(src[(pr.id+i*2)%src.length]);
+  var uniq=[];out.forEach(function(r){if(uniq.indexOf(r)<0)uniq.push(r)});
+  return uniq.map(function(r){var m=[];
+    if(r.b===S.pet.breed)m.push('같은 품종');
+    if(Math.abs(r.a-S.pet.age)<=1)m.push('비슷한 나이');
+    r.c.forEach(function(c){if(S.pet.conds.indexOf(c)>-1)m.push('같은 고민 · '+c)});
+    return{r:r,m:m,s:m.length}}).sort(function(a,b){return b.s-a.s});
+}
+
+/* ---------- 케어 계산 ---------- */
+function daysLeft(){return S.stock.daily>0?Math.floor(S.stock.g/S.stock.daily):99}
+function sumLog(d,k){var s=0;S.logs.forEach(function(l){if(l.d===d&&l.k===k)s+=l.v});return s}
+
+/* ---------- 렌더: 공통 ---------- */
+function pcard(pr){
+  var h=hits(pr),m=matchTags(pr);
+  var tl='';
+  if(h.length)tl+='<span class="chip warn">'+esc(h[0])+' 포함</span>';
+  else if(m.length)tl+='<span class="chip acc">맞춤</span>';
+  if(pr.sub)tl+='<span class="chip sun">구독 10%</span>';
+  return '<button class="pcard" data-act="open" data-id="'+pr.id+'" data-cat="'+pr.cat+'">'
+   +'<div class="tile">'+svg(ICONS[pr.cat])+'<div class="tl">'+tl+'</div></div>'
+   +'<span class="br">'+esc(pr.brand)+'</span><span class="nm">'+esc(pr.name)+'</span>'
+   +'<span class="price">'+won(pr.price)+'</span>'
+   +'<span class="rate">★ '+pr.rating.toFixed(1)+' · 후기 '+pr.n.toLocaleString('ko-KR')+'</span></button>';
+}
+function petCard(){var p=S.pet;
+  return '<div class="card pet"><div class="avatar">'+esc(p.name.charAt(0))+'</div>'
+   +'<div style="flex:1;min-width:0"><b>'+esc(p.name)+'</b> <span class="muted">'+(p.sp==='dog'?'강아지':'고양이')+' · '+esc(p.breed)+' · '+p.age+'살 · '+p.kg+'kg</span>'
+   +'<div class="chips" style="margin-top:6px">'
+   +(p.allergies.length?p.allergies.map(function(a){return '<span class="chip warn">'+esc(a)+' 제외</span>'}).join(''):'<span class="chip">알레르기 없음</span>')
+   +p.conds.map(function(c){return '<span class="chip acc">'+esc(c)+'</span>'}).join('')+'</div></div>'
+   +'<button class="btn ghost sm" data-act="profile">수정</button></div>';
+}
+
+/* ---------- 홈 ---------- */
+function viewHome(){
+  var r=recs(),t=today(),alerts='';
+  var dl=daysLeft();
+  if(dl<=7){
+    var food=r.filter(function(p){return p.cat==='사료'&&p.sub})[0];
+    alerts+='<div class="card alert hot"><div class="t"><b>사료가 약 '+dl+'일 치 남았어요</b><span class="note">하루 '+S.stock.daily+'g 기준 · 정기구독하면 10% 할인</span></div>'
+     +(food?'<button class="btn sm" data-act="open-sub" data-id="'+food.id+'">추천 사료 보기</button>':'')+'</div>';
+  }
+  S.vacc.slice().sort(function(a,b){return a.next<b.next?-1:1}).forEach(function(v){
+    var d=diffDays(v.next,t);
+    if(d<=14)alerts+='<div class="card alert"><div class="t"><b>'+esc(v.n)+' '+(d<0?'기한이 지났어요':d===0?'오늘이에요':'D-'+d)+'</b><span class="note">'+md(v.next)+' 예정 · 케어 탭에서 완료 처리</span></div><button class="btn ghost sm" data-act="tab" data-t="care">확인</button></div>';
+  });
+  var subs=r.filter(function(p){return p.sub&&(p.cat==='배변'||p.cat==='사료')}).slice(0,4);
+  var excluded=pool().length-safePool().length;
+  var best=[];
+  var bi=r[0];
+  var rv=bi?reviewsFor(bi)[0]:null;
+  return '<section class="sec">'+petCard()+'</section>'
+  +(alerts?'<section class="sec"><div class="sec-h"><h2>오늘 챙길 일</h2></div>'+alerts+'</section>':'')
+  +'<section class="sec"><div class="sec-h"><h2>'+esc(S.pet.name)+'에게 맞는 상품</h2><small>알레르기 성분 '+excluded+'개 상품 제외</small></div>'
+  +'<div class="hscroll">'+r.slice(0,6).map(pcard).join('')+'</div></section>'
+  +'<section class="sec"><div class="sec-h"><h2>떨어지기 전에 정기구독</h2><small>10% 할인 · 무료 변경</small></div>'
+  +'<div class="hscroll">'+subs.map(pcard).join('')+'</div></section>'
+  +(rv?'<section class="sec"><div class="sec-h"><h2>비슷한 아이 후기</h2></div>'+reviewHtml(rv)+'<button class="btn ghost block" data-act="open" data-id="'+bi.id+'">'+esc(bi.name)+' 보기</button></section>':'');
+}
+function reviewHtml(x){var r=x.r;
+  return '<div class="review'+(x.s?' match':'')+'"><div class="row"><span class="stars" aria-label="별점 '+r.r+'점">'+'★'.repeat(r.r)+'☆'.repeat(5-r.r)+'</span><span class="note">'+esc(r.b)+' · '+r.a+'살'+(r.c.length?' · '+esc(r.c.join(', ')):'')+'</span></div>'
+   +'<div>'+esc(r.t)+'</div>'+(x.m.length?'<div class="chips">'+x.m.map(function(m){return '<span class="chip acc">'+esc(m)+'</span>'}).join('')+'</div>':'')+'</div>';
+}
+
+/* ---------- 쇼핑 ---------- */
+function listHtml(){
+  var q=UI.q.trim().toLowerCase();
+  var items=pool().filter(function(p){
+    if(UI.cat!=='전체'&&p.cat!==UI.cat)return false;
+    if(UI.safe&&hits(p).length)return false;
+    if(q&&(p.name+p.brand+p.ing.join('')).toLowerCase().indexOf(q)<0)return false;
+    return true}).sort(function(a,b){return score(b)-score(a)});
+  if(!items.length)return '<div class="empty"><b>조건에 맞는 상품이 없어요</b><span>검색어를 바꾸거나 안전 필터를 꺼서 확인해 보세요.</span></div>';
+  return '<div class="grid">'+items.map(pcard).join('')+'</div>';
+}
+function viewShop(){
+  return '<section class="sec"><div class="search"><input id="q" type="search" placeholder="상품명, 브랜드, 성분 검색" value="'+esc(UI.q)+'" aria-label="상품 검색"></div>'
+  +'<div class="cats" id="cats">'+catChips()+'</div>'
+  +'<div class="safe"><span>'+esc(S.pet.name)+'에게 안전한 상품만 보기<br><span class="note">'+(S.pet.allergies.length?esc(S.pet.allergies.join(', '))+' 포함 상품 숨김':'등록된 알레르기가 없어요')+'</span></span><button class="sw" id="safeSw" role="switch" aria-checked="'+UI.safe+'" aria-label="안전한 상품만 보기" data-act="safe"></button></div>'
+  +'<div id="list">'+listHtml()+'</div></section>';
+}
+function catChips(){return CATS.map(function(c){return '<button class="chip toggle" aria-pressed="'+(UI.cat===c)+'" data-act="cat" data-c="'+c+'">'+c+'</button>'}).join('')}
+
+/* ---------- 케어 ---------- */
+function viewCare(){
+  var t=today(),td=ymd(t),i,bars='',max=60;
+  var vals=[];
+  for(i=6;i>=0;i--){var d=ymd(addDays(t,-i));vals.push({d:d,v:sumLog(d,'walk'),w:['일','월','화','수','목','금','토'][fromYmd(d).getDay()]});}
+  vals.forEach(function(x){if(x.v>max)max=x.v});
+  vals.forEach(function(x){bars+='<div'+(x.d===td?' class="today"':'')+'><b>'+x.v+'</b><i style="height:'+Math.max(4,Math.round(x.v/max*64))+'px"></i>'+x.w+'</div>'});
+  var dl=daysLeft(),pct=Math.min(100,Math.round(S.stock.g/(S.stock.daily*30||1)*100));
+  var vac=S.vacc.slice().sort(function(a,b){return a.next<b.next?-1:1}).map(function(v){var d=diffDays(v.next,t);
+    return '<div class="card row"><div><b>'+esc(v.n)+'</b><br><span class="note">다음 '+md(v.next)+' · '+(d<0?Math.abs(d)+'일 지남':d===0?'오늘':'D-'+d)+'</span></div><button class="btn ghost sm" data-act="vdone" data-n="'+esc(v.n)+'">접종 완료</button></div>'}).join('');
+  var feedToday=sumLog(td,'feed');
+  return '<section class="sec"><div class="sec-h"><h2>산책 기록</h2><small>오늘 '+sumLog(td,'walk')+'분 <span class="tag-ex">예시 기록 포함</span></small></div>'
+  +'<div class="card sec"><div class="bars" role="img" aria-label="최근 7일 산책 시간(분)">'+bars+'</div>'
+  +'<div class="row"><button class="btn ghost sm" data-act="log" data-k="walk" data-v="15">+15분</button><button class="btn ghost sm" data-act="log" data-k="walk" data-v="30">+30분</button><button class="btn ghost sm" data-act="log" data-k="walk" data-v="60">+60분</button></div></div></section>'
+  +'<section class="sec"><div class="sec-h"><h2>급여와 사료 재고</h2><small>오늘 급여 '+feedToday+'g</small></div>'
+  +'<div class="card sec"><div class="row"><b>남은 사료 약 '+dl+'일</b><span class="note">'+S.stock.g.toLocaleString('ko-KR')+'g · 하루 '+S.stock.daily+'g</span></div>'
+  +'<div class="meter'+(dl<=7?' low':'')+'"><i style="width:'+pct+'%"></i></div>'
+  +'<div class="row"><button class="btn ghost sm" data-act="feed" data-v="50">+50g 급여</button><button class="btn ghost sm" data-act="feed" data-v="100">+100g 급여</button><button class="btn ghost sm" data-act="restock">새 포대 2kg 열기</button></div>'
+  +'<span class="note">급여를 기록하면 남은 양이 줄고, 7일 이하가 되면 홈에서 알려드려요.</span></div></section>'
+  +'<section class="sec"><div class="sec-h"><h2>예방접종</h2></div>'+vac+'</section>';
+}
+
+/* ---------- 구독 ---------- */
+function viewSubs(){
+  var t=today();
+  var list=S.subs.map(function(s){var pr=byId(s.pid);return '<div class="card sec"><div class="line"><div class="tile" data-cat="'+pr.cat+'">'+svg(ICONS[pr.cat])+'</div><div class="info"><b>'+esc(pr.name)+'</b><span class="note">'+s.weeks+'주마다 · '+s.qty+'개 · '+won(unitPrice(pr,true)*s.qty)+'</span><span class="chip acc" style="align-self:flex-start">다음 배송 '+md(s.next)+'</span></div></div>'
+   +'<div class="row"><button class="btn ghost sm" data-act="skip" data-id="'+s.id+'">한 번 건너뛰기</button><button class="btn ghost sm" data-act="cancel" data-id="'+s.id+'">해지</button></div></div>'}).join('');
+  var sug=safePool().filter(function(p){return p.sub}).slice(0,6);
+  return '<section class="sec"><div class="sec-h"><h2>내 정기구독</h2><small>'+S.subs.length+'개</small></div>'
+  +(list||'<div class="empty card"><b>아직 정기구독이 없어요</b><span>사료, 배변패드, 모래처럼 주기가 일정한 상품을 구독하면 10% 할인돼요.</span></div>')+'</section>'
+  +'<section class="sec"><div class="sec-h"><h2>구독하기 좋은 상품</h2><small>알레르기 성분 제외</small></div><div class="grid">'+sug.map(pcard).join('')+'</div></section>';
+}
+
+/* ---------- MY ---------- */
+function viewMy(){
+  var orders=S.orders.slice().reverse().map(function(o){return '<div class="card sec"><div class="row"><b>'+md(o.d)+' 주문</b><span class="chip">'+esc(o.pay)+'</span></div>'
+   +o.lines.map(function(l){return '<div class="row note"><span>'+esc(l.name)+' × '+l.qty+(l.sub?' <span class="chip sun">구독</span>':'')+'</span><span>'+won(l.p*l.qty)+'</span></div>'}).join('')
+   +'<div class="row"><span class="note">배송비 '+won(o.ship)+'</span><b>'+won(o.total)+'</b></div></div>'}).join('');
+  return '<section class="sec"><div class="sec-h"><h2>반려동물 프로필</h2></div>'+petCard()+'</section>'
+  +'<section class="sec"><div class="sec-h"><h2>주문 내역</h2></div>'+(orders||'<div class="empty card"><b>주문 내역이 없어요</b></div>')+'</section>'
+  +'<p class="note">이 앱은 시연용입니다. 상품, 후기, 기록 일부는 예시 데이터이며 실제 결제와 배송은 이루어지지 않습니다.</p>';
+}
+
+/* ---------- 메인 렌더 ---------- */
+var TABS=[['home','홈','<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>'],
+ ['shop','쇼핑','<path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/>'],
+ ['care','케어','<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.500-7 10-7 10z"/>'],
+ ['subs','구독','<path d="M20 12a8 8 0 1 1-2.5-5.800"/><path d="M20 4v4h-4"/>'],
+ ['my','MY','<circle cx="12" cy="8" r="4"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/>']];
+function renderTabs(){$('#tabs').innerHTML=TABS.map(function(t){return '<button data-act="tab" data-t="'+t[0]+'"'+(UI.tab===t[0]?' aria-current="page"':'')+'>'+svg(t[2])+t[1]+'</button>'}).join('')}
+function render(keepScroll){
+  var m=$('#main'),y=m.scrollTop;
+  var v={home:viewHome,shop:viewShop,care:viewCare,subs:viewSubs,my:viewMy}[UI.tab];
+  m.innerHTML=v();renderTabs();
+  if(keepScroll)m.scrollTop=y;
+  var n=0;S.cart.forEach(function(c){n+=c.qty});
+  var b=$('#cartN');b.hidden=!n;b.textContent=n;
+}
+
+/* ---------- 시트 ---------- */
+function cartTotals(){var sub=0,i;
+  for(i=0;i<S.cart.length;i++){var c=S.cart[i],pr=byId(c.pid);sub+=unitPrice(pr,c.sub)*c.qty}
+  var ship=(sub===0||sub>=30000)?0:3000;return{sub:sub,ship:ship,total:sub+ship}}
+function sheetHead(title,back){return '<header><button class="icon-btn" data-act="close" aria-label="닫기">'+svg('<path d="M15 5l-7 7 7 7"/>')+'</button><h2>'+title+'</h2></header>'}
+function sheetProduct(){
+  var pr=byId(UI.pid),h=hits(pr),m=matchTags(pr),subOn=UI.opt==='sub'&&pr.sub;
+  var price=unitPrice(pr,subOn);
+  var rv=reviewsFor(pr);
+  return sheetHead('상품 상세')
+  +'<div class="body">'
+  +'<div class="tile" data-cat="'+pr.cat+'" style="aspect-ratio:16/10">'+svg(ICONS[pr.cat])+'</div>'
+  +'<div class="sec"><span class="note">'+esc(pr.brand)+'</span><h2 style="font-size:19px">'+esc(pr.name)+'</h2>'
+  +'<div class="row"><span class="price" style="font-size:20px">'+won(pr.price)+'</span><span class="rate">★ '+pr.rating.toFixed(1)+' · 후기 '+pr.n.toLocaleString('ko-KR')+'</span></div>'
+  +'<div class="chips">'+(h.length?h.map(function(x){return '<span class="chip warn">'+esc(S.pet.name)+'의 알레르기 성분 '+esc(x)+' 포함</span>'}).join(''):'<span class="chip acc">'+esc(S.pet.name)+'에게 안전한 성분</span>')+m.map(function(x){return '<span class="chip acc">'+esc(x)+'</span>'}).join('')+'</div>'
+  +'<p style="margin:0">'+esc(pr.desc)+'</p></div>'
+  +'<div class="sec"><span class="lbl">원재료</span><div class="chips">'+pr.ing.map(function(x){return '<span class="chip'+(S.pet.allergies.indexOf(x)>-1?' warn':'')+'">'+esc(x)+'</span>'}).join('')+'</div></div>'
+  +'<div class="sec"><span class="lbl">구매 방법</span>'
+  +'<button class="opt" data-act="opt" data-o="once" aria-pressed="'+!subOn+'"><span class="dot"></span><span><b>한 번만 구매</b><br><span class="note">'+won(pr.price)+'</span></span></button>'
+  +(pr.sub?'<button class="opt" data-act="opt" data-o="sub" aria-pressed="'+subOn+'"><span class="dot"></span><span style="flex:1"><b>정기구독 <span class="chip sun">10% 할인</span></b><br><span class="note">'+won(unitPrice(pr,true))+' · 자동 결제, 언제든 해지</span></span></button>'
+   +(subOn?'<div class="row" style="padding-left:4px"><span class="note">배송 주기</span><div class="chips">'+WEEKS.map(function(w){return '<button class="chip toggle" data-act="weeks" data-w="'+w+'" aria-pressed="'+(UI.weeks===w)+'">'+w+'주마다</button>'}).join('')+'</div></div>':''):'<span class="note">이 상품은 정기구독을 지원하지 않아요.</span>')+'</div>'
+  +'<div class="sec"><div class="sec-h"><h2>'+esc(S.pet.name)+'와 비슷한 아이 후기</h2><small>같은 품종·나이·고민 순</small></div>'+rv.map(reviewHtml).join('')+'<span class="note">후기는 예시 데이터입니다.</span></div>'
+  +'</div>'
+  +'<footer><div class="qty"><button data-act="q" data-d="-1" aria-label="수량 줄이기">−</button><span>'+UI.qty+'</span><button data-act="q" data-d="1" aria-label="수량 늘리기">+</button></div>'
+  +'<button class="btn ghost" style="flex:1" data-act="add">담기 · '+won(price*UI.qty)+'</button><button class="btn" style="flex:1" data-act="buy">바로 구매</button></footer>';
+}
+function sheetCart(){
+  var t=cartTotals();
+  var lines=S.cart.map(function(c,i){var pr=byId(c.pid);return '<div class="card line"><div class="tile" data-cat="'+pr.cat+'">'+svg(ICONS[pr.cat])+'</div><div class="info"><span class="nm" style="font-weight:500">'+esc(pr.name)+'</span>'
+   +(c.sub?'<span class="chip sun" style="align-self:flex-start">정기구독 '+c.weeks+'주마다</span>':'')
+   +(hits(pr).length?'<span class="chip warn" style="align-self:flex-start">'+esc(hits(pr).join(', '))+' 포함</span>':'')
+   +'<div class="row"><div class="qty"><button data-act="cq" data-i="'+i+'" data-d="-1" aria-label="수량 줄이기">−</button><span>'+c.qty+'</span><button data-act="cq" data-i="'+i+'" data-d="1" aria-label="수량 늘리기">+</button></div><span class="price">'+won(unitPrice(pr,c.sub)*c.qty)+'</span></div></div>'
+   +'<button class="icon-btn" data-act="crm" data-i="'+i+'" aria-label="삭제">'+svg('<path d="M6 6l12 12M18 6L6 18"/>')+'</button></div>'}).join('');
+  return sheetHead('장바구니')+'<div class="body">'+(S.cart.length?lines+'<div class="card sum"><div class="row"><span>상품 금액</span><span>'+won(t.sub)+'</span></div><div class="row"><span>배송비</span><span>'+(t.ship?won(t.ship):'무료')+'</span></div>'+(t.ship?'<span class="note">'+won(30000-t.sub)+' 더 담으면 배송비 무료</span>':'')+'<div class="row tot"><span>결제 예정</span><span>'+won(t.total)+'</span></div></div>':'<div class="empty"><b>장바구니가 비어 있어요</b><span>'+esc(S.pet.name)+'에게 맞는 상품을 담아보세요.</span><button class="btn" data-act="close-tab" data-t="shop">쇼핑하러 가기</button></div>')+'</div>'
+  +(S.cart.length?'<footer><button class="btn block" data-act="checkout">'+won(t.total)+' 주문하기</button></footer>':'');
+}
+function sheetCheckout(){
+  var t=cartTotals(),a=S.addr;
+  return sheetHead('주문하기')+'<div class="body">'
+  +'<div class="sec"><h2>배송지</h2>'
+  +'<div class="field"><label for="a-name">받는 분</label><input id="a-name" autocomplete="name" value="'+esc(a.name)+'"></div>'
+  +'<div class="field"><label for="a-phone">연락처</label><input id="a-phone" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" value="'+esc(a.phone)+'"></div>'
+  +'<div class="field"><label for="a-addr">주소</label><input id="a-addr" autocomplete="street-address" value="'+esc(a.addr)+'"></div></div>'
+  +'<div class="field"><label for="a-pay">결제 수단</label><select id="a-pay"><option>간편결제</option><option>신용·체크카드</option><option>계좌이체</option></select></div>'
+  +'<div class="card sum"><div class="row"><span>상품 금액</span><span>'+won(t.sub)+'</span></div><div class="row"><span>배송비</span><span>'+(t.ship?won(t.ship):'무료')+'</span></div><div class="row tot"><span>총 결제 금액</span><span>'+won(t.total)+'</span></div></div>'
+  +(S.cart.some(function(c){return c.sub})?'<span class="note">정기구독 상품은 선택한 주기마다 같은 수단으로 자동 결제됩니다. 구독 탭에서 언제든 해지할 수 있어요.</span>':'')
+  +'<span class="note">시연용 화면입니다. 실제 결제는 진행되지 않으며 입력한 정보는 이 기기에만 저장됩니다.</span>'
+  +'<div class="err" id="err" role="alert">'+esc(UI.err)+'</div></div>'
+  +'<footer><button class="btn block" data-act="pay">'+won(t.total)+' 결제하기</button></footer>';
+}
+function sheetDone(){
+  return sheetHead('주문 완료')+'<div class="body"><div class="empty"><div class="avatar">✓</div><b style="font-size:18px;color:var(--ink)">주문이 접수됐어요</b><span>'+(S.subs.length?'정기구독 상품은 구독 탭에서 다음 배송일을 확인할 수 있어요.':'주문 내역은 MY에서 볼 수 있어요.')+'</span><button class="btn" data-act="close-tab" data-t="home">홈으로</button></div></div>';
+}
+var DRAFT=null;
+function sheetProfile(){
+  var p=DRAFT;
+  return sheetHead('반려동물 프로필')+'<div class="body">'
+  +'<div class="field"><label for="p-name">이름</label><input id="p-name" value="'+esc(p.name)+'"></div>'
+  +'<div class="sec"><span class="lbl">종류</span><div class="seg"><button class="chip toggle" data-act="dsp" data-s="dog" aria-pressed="'+(p.sp==='dog')+'">강아지</button><button class="chip toggle" data-act="dsp" data-s="cat" aria-pressed="'+(p.sp==='cat')+'">고양이</button></div></div>'
+  +'<div class="field"><label for="p-breed">품종</label><input id="p-breed" value="'+esc(p.breed)+'" placeholder="예: 말티즈, 코리안숏헤어"></div>'
+  +'<div class="seg"><div class="field"><label for="p-age">나이(살)</label><input id="p-age" type="number" min="0" max="25" step="1" inputmode="numeric" value="'+p.age+'"></div><div class="field"><label for="p-kg">몸무게(kg)</label><input id="p-kg" type="number" min="0.3" max="80" step="0.1" inputmode="decimal" value="'+p.kg+'"></div></div>'
+  +'<div class="sec"><span class="lbl">알레르기 성분 (선택한 성분이 든 상품은 추천에서 제외돼요)</span><div class="chips" id="d-al">'+ALLERGENS.map(function(a){return '<button class="chip toggle" data-act="dtog" data-g="allergies" data-v="'+a+'" aria-pressed="'+(p.allergies.indexOf(a)>-1)+'">'+a+'</button>'}).join('')+'</div></div>'
+  +'<div class="sec"><span class="lbl">신경 쓰는 건강 고민</span><div class="chips" id="d-co">'+CONDS.map(function(a){return '<button class="chip toggle" data-act="dtog" data-g="conds" data-v="'+a+'" aria-pressed="'+(p.conds.indexOf(a)>-1)+'">'+a+'</button>'}).join('')+'</div></div>'
+  +'</div><footer><button class="btn block" data-act="psave">저장하고 추천 새로고침</button></footer>';
+}
+function openSheet(type){
+  UI.sheet=type;
+  var sh=$('#sheet'),prev=$('.body',sh),y=prev&&sh.classList.contains('open')?prev.scrollTop:0;
+  sh.innerHTML={product:sheetProduct,cart:sheetCart,checkout:sheetCheckout,done:sheetDone,profile:sheetProfile}[type]();
+  sh.classList.add('open');
+  var b=$('.body',sh);if(b)b.scrollTop=y;
+  if(!sh.classList.contains('was'))sh.classList.add('was');
+}
+function closeSheet(){UI.sheet=null;$('#sheet').classList.remove('open');render(true)}
+
+/* ---------- 액션 ---------- */
+function addToCart(){
+  var pr=byId(UI.pid),sub=UI.opt==='sub'&&pr.sub,i;
+  for(i=0;i<S.cart.length;i++){var c=S.cart[i];if(c.pid===pr.id&&!!c.sub===!!sub&&(!sub||c.weeks===UI.weeks)){c.qty+=UI.qty;save();return}}
+  S.cart.push({pid:pr.id,qty:UI.qty,sub:sub,weeks:sub?UI.weeks:0});save();
+}
+function readAddr(){S.addr={name:$('#a-name').value.trim(),phone:$('#a-phone').value.trim(),addr:$('#a-addr').value.trim()}}
+var A={
+ tab:function(e){UI.tab=e.dataset.t;render();$('#main').scrollTop=0},
+ 'close-tab':function(e){UI.tab=e.dataset.t;closeSheet();$('#main').scrollTop=0},
+ cart:function(){openSheet('cart')},
+ close:function(){closeSheet()},
+ open:function(e){UI.pid=+e.dataset.id;UI.opt='once';UI.weeks=4;UI.qty=1;openSheet('product')},
+ 'open-sub':function(e){UI.pid=+e.dataset.id;UI.opt='sub';UI.weeks=4;UI.qty=1;openSheet('product')},
+ opt:function(e){UI.opt=e.dataset.o;openSheet('product')},
+ weeks:function(e){UI.weeks=+e.dataset.w;openSheet('product')},
+ q:function(e){UI.qty=Math.max(1,Math.min(20,UI.qty+ +e.dataset.d));openSheet('product')},
+ add:function(){var h=hits(byId(UI.pid));addToCart();closeSheet();toast(h.length?'담았어요. '+h.join(', ')+' 성분이 들어 있어요':'장바구니에 담았어요');render(true)},
+ buy:function(){addToCart();UI.err='';openSheet('checkout')},
+ cq:function(e){var c=S.cart[+e.dataset.i];c.qty=Math.max(1,Math.min(20,c.qty+ +e.dataset.d));save();openSheet('cart')},
+ crm:function(e){S.cart.splice(+e.dataset.i,1);save();openSheet('cart')},
+ checkout:function(){UI.err='';openSheet('checkout')},
+ pay:function(){
+  readAddr();var pay=$('#a-pay').value;
+  if(!S.addr.name||!S.addr.phone||!S.addr.addr){UI.err='받는 분, 연락처, 주소를 모두 입력해 주세요.';$('#err').textContent=UI.err;save();return}
+  var t=cartTotals(),td=today(),lines=[];
+  S.cart.forEach(function(c){var pr=byId(c.pid);
+    lines.push({name:pr.name,qty:c.qty,p:unitPrice(pr,c.sub),sub:c.sub});
+    if(c.sub)S.subs.push({id:Date.now()+'-'+pr.id+'-'+c.weeks,pid:pr.id,qty:c.qty,weeks:c.weeks,next:ymd(addDays(td,c.weeks*7))});
+  });
+  S.orders.push({d:ymd(td),lines:lines,ship:t.ship,total:t.total,pay:pay});
+  S.cart=[];save();openSheet('done');
+ },
+ cat:function(e){UI.cat=e.dataset.c;$('#cats').innerHTML=catChips();$('#list').innerHTML=listHtml()},
+ safe:function(){UI.safe=!UI.safe;$('#safeSw').setAttribute('aria-checked',UI.safe);$('#list').innerHTML=listHtml()},
+ log:function(e){S.logs.push({d:ymd(today()),k:e.dataset.k,v:+e.dataset.v});save();render(true);toast('산책 '+e.dataset.v+'분을 기록했어요')},
+ feed:function(e){var v=+e.dataset.v;S.logs.push({d:ymd(today()),k:'feed',v:v});S.stock.g=Math.max(0,S.stock.g-v);save();render(true);toast('급여 '+v+'g을 기록했어요')},
+ restock:function(){S.stock.g+=2000;save();render(true);toast('남은 사료에 2kg을 더했어요')},
+ vdone:function(e){S.vacc.forEach(function(v){if(v.n===e.dataset.n){var d=addDays(today(),0);d.setMonth(d.getMonth()+v.mo);v.next=ymd(d)}});save();render(true);toast('접종을 완료 처리했어요. 다음 일정을 갱신했어요')},
+ skip:function(e){S.subs.forEach(function(s){if(s.id===e.dataset.id)s.next=ymd(addDays(fromYmd(s.next),s.weeks*7))});save();render(true);toast('다음 배송을 한 번 건너뛰어요')},
+ cancel:function(e){S.subs=S.subs.filter(function(s){return s.id!==e.dataset.id});save();render(true);toast('정기구독을 해지했어요')},
+ profile:function(){DRAFT=JSON.parse(JSON.stringify(S.pet));openSheet('profile')},
+ dsp:function(e){DRAFT.sp=e.dataset.s;[].forEach.call(e.parentNode.children,function(b){b.setAttribute('aria-pressed',b===e)})},
+ dtog:function(e){var g=DRAFT[e.dataset.g],v=e.dataset.v,i=g.indexOf(v);if(i>-1)g.splice(i,1);else g.push(v);e.setAttribute('aria-pressed',i<0)},
+ psave:function(){
+  var n=$('#p-name').value.trim()||'우리 아이';
+  DRAFT.name=n;DRAFT.breed=$('#p-breed').value.trim()||'믹스';
+  DRAFT.age=Math.max(0,Math.min(25,parseInt($('#p-age').value,10)||0));DRAFT.kg=Math.max(0.3,parseFloat($('#p-kg').value)||1);
+  S.pet=DRAFT;save();closeSheet();toast(n+'에게 맞는 추천으로 바꿨어요');
+ }
+};
+document.addEventListener('click',function(ev){
+  var el=ev.target.closest('[data-act]');if(!el)return;
+  var f=A[el.dataset.act];if(f)f(el);
+});
+document.addEventListener('input',function(ev){
+  if(ev.target.id==='q'){UI.q=ev.target.value;$('#list').innerHTML=listHtml()}
+});
+document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&UI.sheet)closeSheet()});
+render();
+})();
+</script>
+
+</body></html>
